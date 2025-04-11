@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Winky Sans", sans-serif;
+}
+
+/* Hide scrollbar but still allow scroll */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Chrome, Edge, Safari */
+body::-webkit-scrollbar {
+  display: none;
+}
