@@ -94,7 +94,7 @@ const Navbar = () => {
                 {isLoggedIn ? (
                   <>
                     <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-300">My Profile</Link></li>
-                    <li><Link to="/orders" className="block px-4 py-2 hover:bg-gray-300">My Orders</Link></li>
+                    <li><Link to="/my-orders" className="block px-4 py-2 hover:bg-gray-300">My Orders</Link></li>
                     <li><button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-gray-300">Logout</button></li>
                   </>
                 ) : (
