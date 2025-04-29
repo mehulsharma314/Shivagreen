@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, MapPin, CreditCard, Settings, ShoppingBag, LogOut } from 'lucide-react';
+import { User, MapPin, CreditCard, Settings, ShoppingBag, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from './services/Api.js';
 import toast from 'react-hot-toast';
@@ -16,18 +16,19 @@ const Profile = () => {
   const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEdited, setIsEdited] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile toggle
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await api.get('/api/auth/profile', {
+        const response = await api.get('/auth/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setUserData(response.data);
-        setOriginalData(response.data); 
+        setOriginalData(response.data);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -40,32 +41,30 @@ const Profile = () => {
 
   const handleChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
-    setIsEdited(true); 
+    setIsEdited(true);
   };
 
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-
-      const response = await api.put('/api/auth/profile', userData, {
+      const response = await api.put('/auth/profile', userData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      toast('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       setUserData(response.data.user);
-      setOriginalData(response.data.user); 
-      setIsEdited(false); 
+      setOriginalData(response.data.user);
+      setIsEdited(false);
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast('Failed to update profile.');
+      toast.error('Failed to update profile.');
     }
   };
 
   const handleCancel = () => {
-    setUserData(originalData); 
-    setIsEdited(false); 
+    setUserData(originalData);
+    setIsEdited(false);
   };
 
   const handleLogout = () => {
@@ -73,18 +72,29 @@ const Profile = () => {
     navigate('/login');
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* Sidebar toggle button for mobile */}
+      <div className="flex md:hidden justify-between items-center bg-white p-4 shadow-md">
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-gray-600">
+          <Menu />
+        </button>
+        <h2 className="text-xl font-bold text-gray-800">Profile</h2>
+      </div>
+
       {/* Sidebar */}
-      <aside className="w-72 bg-white p-6 shadow-md flex flex-col justify-between">
+      <aside
+        className={`w-full md:w-72 bg-white p-6 shadow-md transform md:transform-none transition-transform duration-300 ease-in-out z-50 ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        } md:translate-x-0 fixed md:static h-full md:h-auto`}
+      >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center text-center mt-6">
-            {/* Placeholder avatar */}
             <div className="w-20 h-20 bg-gray-300 rounded-full mb-3">
               <img
-                src="https://randomuser.me/api/portraits/lego/5.jpg" // Random avatar
+                src="https://randomuser.me/api/portraits/lego/5.jpg"
                 alt="User Avatar"
                 className="w-full h-full object-cover rounded-full"
               />
@@ -144,14 +154,19 @@ const Profile = () => {
         </button>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-10">
-        {/* Personal Information */}
-        <section className="bg-white p-8 rounded-xl shadow-md mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Personal Information</h2>
-          </div>
+      {/* Overlay for mobile when sidebar is open */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
 
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-10 mt-4 md:mt-0">
+        {/* Personal Info */}
+        <section className="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
               type="text"
@@ -162,7 +177,6 @@ const Profile = () => {
               className="border border-gray-300 rounded-md p-3 w-full"
             />
           </div>
-
           <div className="mt-6">
             <label className="font-medium text-gray-700 block mb-2">Your Gender</label>
             <div className="flex items-center gap-6">
@@ -190,11 +204,9 @@ const Profile = () => {
           </div>
         </section>
 
-        {/* Email Address */}
-        <section className="bg-white p-8 rounded-xl shadow-md mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Email Address</h2>
-          </div>
+        {/* Email */}
+        <section className="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Email Address</h2>
           <input
             type="email"
             name="email"
@@ -204,11 +216,9 @@ const Profile = () => {
           />
         </section>
 
-        {/* Mobile Number */}
-        <section className="bg-white p-8 rounded-xl shadow-md mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Mobile Number</h2>
-          </div>
+        {/* Mobile */}
+        <section className="bg-white p-6 md:p-8 rounded-xl shadow-md mb-8">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Mobile Number</h2>
           <input
             type="text"
             name="mobile"
@@ -218,7 +228,7 @@ const Profile = () => {
           />
         </section>
 
-        {/* Save & Cancel Buttons */}
+        {/* Buttons */}
         {isEdited && (
           <div className="flex justify-start gap-4">
             <button
