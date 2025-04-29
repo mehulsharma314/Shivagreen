@@ -39,6 +39,13 @@ const SignupPage = () => {
     }
   };
 
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('token'); // or however you store login
+    if (isLoggedIn) {
+      navigate(from); // or wherever your StepperPage is
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-green-50 px-4 py-12">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
