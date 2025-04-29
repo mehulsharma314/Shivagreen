@@ -3,7 +3,7 @@ import api from './Api.js';
 // Register User
 export const registerUser = async (userData) => {
   try {
-    const response = await api.post('/auth/register', userData);
+    const response = await api.post('/api/auth/register', userData);
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Something went wrong" };
@@ -13,7 +13,7 @@ export const registerUser = async (userData) => {
 // Login User
 export const loginUser = async (userData) => {
   try {
-    const response = await api.post('/auth/login', userData);
+    const response = await api.post('/api/auth/login', userData);
     if (response.data.token) {
       localStorage.setItem('token', response.data.token);  
     }
