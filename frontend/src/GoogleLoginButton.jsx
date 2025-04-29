@@ -13,7 +13,7 @@ const GoogleLoginButton = () => {
     const handleSuccess = async (credentialResponse) => {
 
         try {
-            const res = await api.post('/google', {
+            const res = await api.post('/auth/google', {
                 credential: credentialResponse.credential, 
             });
 
