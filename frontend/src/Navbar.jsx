@@ -8,22 +8,21 @@ import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const { isLoggedIn, logout } = useAuth();
-  const [menuOpen, setMenuOpen] = useState(false);
   const { totalItems } = useCart();
   const navigate = useNavigate();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Handle scrolling
+  // Handle scroll behavior
   useEffect(() => {
     const handleScroll = () => {
       if (typeof window !== 'undefined') {
         if (window.scrollY > lastScrollY) {
-          // Scrolling down
           setShowNavbar(false);
         } else {
-          // Scrolling up
           setShowNavbar(true);
         }
         setLastScrollY(window.scrollY);
@@ -31,22 +30,21 @@ const Navbar = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   const handleLogout = () => {
     logout();
-    toast.success('Logout Succesfull ', {
-            icon: '👍',
-            style: {
-                borderRadius: '10px',
-                background: '#f7f4f4fb',
-                color: '#f71b07',
-            },
-        });
+    toast.success('Logout Successful', {
+      icon: '👍',
+      style: {
+        borderRadius: '10px',
+        background: '#f7f4f4fb',
+        color: '#f71b07',
+      },
+    });
+    setShowProfileMenu(false);
+    setMenuOpen(false);
     navigate('/login');
   };
 
@@ -56,11 +54,7 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex-shrink-0">
           <Link to="/">
-            <img
-              src={assets.logo}
-              alt="Logo"
-              className="h-14 w-auto drop-shadow-md"
-            />
+            <img src={assets.logo} alt="Logo" className="h-14 w-auto drop-shadow-md" />
           </Link>
         </div>
 
@@ -76,10 +70,10 @@ const Navbar = () => {
           <NavLinks />
         </div>
 
-        {/* Right-side Icons */}
+        {/* Desktop Icons */}
         <div className="hidden md:flex items-center space-x-4 relative">
           {/* Cart Icon */}
-          <div className="relative group">
+          <div className="relative">
             <Link to="/cart" className="relative">
               <ShoppingCart size={28} className="text-slate-800 hover:text-blue-500 transition" />
               {totalItems > 0 && (
@@ -90,45 +84,23 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Profile Dropdown */}
+          {/* Profile Dropdown - Desktop */}
           <div className="relative group">
             <button className="text-slate-800">
               <User size={28} className="hover:text-blue-500 transition cursor-pointer" />
             </button>
-
-            {/* Dropdown Menu */}
             <div className="absolute right-0 w-48 bg-white shadow-lg rounded-lg z-10 opacity-0 group-hover:opacity-100 group-hover:visible group-hover:block invisible">
               <ul className="text-slate-800 text-sm">
                 {isLoggedIn ? (
                   <>
-                    <li>
-                      <Link to="/profile" className="block px-4 py-2 hover:bg-gray-300 rounded-t-lg" onClick={() => setMenuOpen(false)}>
-                        My Profile
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/orders" className="block px-4 py-2 hover:bg-gray-300">
-                        My Orders
-                      </Link>
-                    </li>
-                    <li>
-                      <button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-gray-300 rounded-b-lg cursor-pointer">
-                        Logout
-                      </button>
-                    </li>
+                    <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-300">My Profile</Link></li>
+                    <li><Link to="/orders" className="block px-4 py-2 hover:bg-gray-300">My Orders</Link></li>
+                    <li><button onClick={handleLogout} className="block w-full px-4 py-2 text-left hover:bg-gray-300">Logout</button></li>
                   </>
                 ) : (
                   <>
-                    <li>
-                      <Link to="/login" className="block px-4 py-2 hover:bg-gray-300 rounded-t-lg">
-                        Log in
-                      </Link>
-                    </li>
-                    <li>
-                      <Link to="/signup" className="block px-4 py-2 hover:bg-gray-300 rounded-b-lg">
-                        Sign Up
-                      </Link>
-                    </li>
+                    <li><Link to="/login" className="block px-4 py-2 hover:bg-gray-300">Log in</Link></li>
+                    <li><Link to="/signup" className="block px-4 py-2 hover:bg-gray-300">Sign Up</Link></li>
                   </>
                 )}
               </ul>
@@ -139,9 +111,12 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden bg-slate-200 px-4 pb-4 space-y-4">
-          <NavLinks mobile />
-          <div className="flex justify-around items-center pt-2">
+        <div className="md:hidden bg-slate-200 px-4 pb-4 space-y-4 relative">
+          <NavLinks mobile onLinkClick={() => { setMenuOpen(false); setShowProfileMenu(false); }} />
+
+          {/* Cart and Profile */}
+          <div className="flex justify-around items-center pt-2 relative">
+            {/* Cart */}
             <Link to="/cart" className="relative">
               <ShoppingCart size={24} className="text-slate-800" />
               {totalItems > 0 && (
@@ -150,27 +125,49 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
-            <button>
+
+            {/* Profile Toggle */}
+            <button onClick={() => setShowProfileMenu(!showProfileMenu)}>
               <User size={24} className="text-slate-800" />
             </button>
           </div>
+
+          {/* Mobile Profile Dropdown */}
+          {showProfileMenu && (
+            <div className="absolute right-4 top-full mt-2 w-48 bg-white shadow-lg rounded-lg z-50 text-slate-800 text-sm">
+              <ul>
+                {isLoggedIn ? (
+                  <>
+                    <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-300" onClick={() => { setMenuOpen(false); setShowProfileMenu(false); }}>My Profile</Link></li>
+                    <li><Link to="/orders" className="block px-4 py-2 hover:bg-gray-300" onClick={() => { setMenuOpen(false); setShowProfileMenu(false); }}>My Orders</Link></li>
+                    <li><button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-300">Logout</button></li>
+                  </>
+                ) : (
+                  <>
+                    <li><Link to="/login" className="block px-4 py-2 hover:bg-gray-300" onClick={() => { setMenuOpen(false); setShowProfileMenu(false); }}>Log In</Link></li>
+                    <li><Link to="/signup" className="block px-4 py-2 hover:bg-gray-300" onClick={() => { setMenuOpen(false); setShowProfileMenu(false); }}>Sign Up</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </nav>
   );
 };
 
-const NavLinks = ({ mobile = false }) => {
+const NavLinks = ({ mobile = false, onLinkClick }) => {
   const baseClass = "transition duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-blue-500 hover:after:w-full after:transition-all";
   const mobileClass = "block text-slate-800 text-base font-medium py-2 border-b border-slate-400";
   const desktopClass = "text-slate-800 hover:text-blue-500";
 
   return (
     <>
-      <Link to="/" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`}>Home</Link>
-      <Link to="/services" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`}>Services</Link>
-      <Link to="/about" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`}>About</Link>
-      <Link to="/contact" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`}>Contact</Link>
+      <Link to="/" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`} onClick={onLinkClick}>Home</Link>
+      <Link to="/services" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`} onClick={onLinkClick}>Services</Link>
+      <Link to="/about" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`} onClick={onLinkClick}>About</Link>
+      <Link to="/contact" className={`${baseClass} ${mobile ? mobileClass : desktopClass}`} onClick={onLinkClick}>Contact</Link>
     </>
   );
 };
