@@ -158,7 +158,7 @@ const StepperPage = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-blue-700 mb-2">Order Status</h4>
-                    <p className="text-green-600 font-bold">Processing...</p>
+                    <p className="text-green-600 font-bold">Confirmed</p>
                   </div>
                   <button
                     onClick={() => navigate('/my-orders')}
