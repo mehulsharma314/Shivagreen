@@ -38,6 +38,13 @@ const SignupPage = () => {
       setError(err.message || 'Registration failed');
     }
   };
+ 
+ useEffect(() => {
+    const isLoggedIn = localStorage.getItem('token'); // or however you store login
+    if (isLoggedIn) {
+      navigate(from); // or wherever your StepperPage is
+    }
+  }, []);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('token'); // or however you store login

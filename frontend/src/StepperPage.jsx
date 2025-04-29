@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const StepperPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -11,15 +12,20 @@ const StepperPage = () => {
     pincode: ''
   });
   const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedCart = sessionStorage.getItem('cart');
     if (storedCart) {
       const parsedCart = JSON.parse(storedCart);
-      const cartArray = Object.values(parsedCart); 
+      const cartArray = Object.values(parsedCart);
       setCartItems(cartArray);
     }
   }, []);
+
+  const handleChange = (e) => {
+    setAddress({ ...address, [e.target.name]: e.target.value });
+  };
 
   const handleNext = () => {
     if (currentStep < 3) {
@@ -27,13 +33,44 @@ const StepperPage = () => {
     }
   };
 
-  const handleChange = (e) => {
-    setAddress({ ...address, [e.target.name]: e.target.value });
-  };
-
   const saveAddress = () => {
+    // Basic validation
+    for (let key in address) {
+      if (!address[key]) {
+        alert(`Please fill in the ${key}`);
+        return;
+      }
+    }
     localStorage.setItem('deliveryAddress', JSON.stringify(address));
     handleNext();
+  };
+
+  const simulatePayment = () => {
+    const storedAddress = localStorage.getItem('deliveryAddress');
+    if (!storedAddress) {
+      alert('Please enter address again.');
+      setCurrentStep(1);
+      return;
+    }
+
+    const order = {
+      items: cartItems,
+      address: JSON.parse(storedAddress),
+      total: calculateTotal(),
+      status: 'Processing',
+      placedAt: new Date().toISOString()
+    };
+
+    const existingOrders = JSON.parse(localStorage.getItem('myOrders')) || [];
+    existingOrders.push(order);
+    localStorage.setItem('myOrders', JSON.stringify(existingOrders));
+
+    handleNext();
+  };
+
+  const calculateTotal = () => {
+    if (!Array.isArray(cartItems)) return 0;
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   const steps = [
@@ -42,19 +79,13 @@ const StepperPage = () => {
     { step: 3, title: 'Order Summary' }
   ];
 
-  const calculateTotal = () => {
-    if (!Array.isArray(cartItems)) return 0;
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 flex justify-center">
       <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* Left Side - Steps + Content */}
+        {/* Main Checkout Flow */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-8">
-
-          {/* Stepper Navigation */}
+          {/* Stepper UI */}
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-blue-700 mb-6">Checkout Progress</h2>
             <div className="flex items-center justify-between">
@@ -105,14 +136,12 @@ const StepperPage = () => {
             {currentStep === 2 && (
               <div className="animate-fade-in">
                 <h3 className="text-2xl font-bold mb-6 text-gray-800">Choose Payment Method</h3>
-                <div className="flex flex-col gap-6">
-                  <button
-                    onClick={handleNext}
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
-                  >
-                    Pay Now (Simulated) →
-                  </button>
-                </div>
+                <button
+                  onClick={simulatePayment}
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
+                >
+                  Pay Now (Simulated) →
+                </button>
               </div>
             )}
 
@@ -131,16 +160,21 @@ const StepperPage = () => {
                     <h4 className="font-semibold text-blue-700 mb-2">Order Status</h4>
                     <p className="text-green-600 font-bold">Processing...</p>
                   </div>
+                  <button
+                    onClick={() => navigate('/my-orders')}
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
+                  >
+                    Go to My Orders →
+                  </button>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right Side - Product Summary */}
+        {/* Cart Summary */}
         <div className="bg-white rounded-2xl shadow-lg p-8 h-fit">
           <h3 className="text-2xl font-bold text-gray-800 mb-6">Your Products</h3>
-
           {cartItems.length === 0 ? (
             <p className="text-gray-500">Your cart is empty.</p>
           ) : (
@@ -163,7 +197,6 @@ const StepperPage = () => {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

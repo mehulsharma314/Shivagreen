@@ -16,6 +16,7 @@ import Profile from './Profile';
 import { AuthProvider } from './AuthContext';
 import { Toaster } from 'react-hot-toast';
 import StepperPage from './StepperPage';
+import MyOrders from './MyOrders';
 
 
 const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -38,6 +39,7 @@ const App = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/checkout" element={<StepperPage />} />
+              <Route path="/my-orders" element={<MyOrders />} />
 
             </Routes>
           </div>

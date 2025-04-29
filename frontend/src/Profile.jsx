@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import api from './services/Api.js';
 import toast from 'react-hot-toast';
 
-// ... imports remain the same
-
 const Profile = () => {
   const navigate = useNavigate();
 
@@ -74,7 +72,7 @@ const Profile = () => {
 
   return (
     <div className="relative flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Overlay */}
+      {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-50 md:hidden"
@@ -105,7 +103,7 @@ const Profile = () => {
             <div className="font-semibold text-gray-600">MY ORDERS</div>
             <div className="flex items-center gap-3 cursor-pointer hover:text-green-600">
               <ShoppingBag className="w-5 h-5" />
-              <span onClick={() => navigate('/orders')}>My Orders</span>
+              <span onClick={() => navigate('/my-orders')}>My Orders</span>
             </div>
 
             <div className="font-semibold text-gray-600 mt-4">ACCOUNT SETTINGS</div>
@@ -151,7 +149,7 @@ const Profile = () => {
         </div>
       </aside>
 
-      {/* Sidebar Toggle Header */}
+      {/* Sidebar toggle header for mobile */}
       <div className="flex md:hidden justify-between items-center bg-white p-4 shadow-md w-full z-40">
         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-gray-600">
           <Menu />
@@ -225,6 +223,7 @@ const Profile = () => {
           />
         </section>
 
+        {/* Action Buttons */}
         {isEdited && (
           <div className="flex justify-start gap-4">
             <button
@@ -247,4 +246,3 @@ const Profile = () => {
 };
 
 export default Profile;
-

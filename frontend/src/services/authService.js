@@ -27,7 +27,7 @@ export const loginUser = async (userData) => {
 // Logout User
 export const logoutUser = async () => {
   try {
-    const response = await api.get('/auth/logout');
+    const response = await api.get('/api/auth/logout');
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Something went wrong" };
