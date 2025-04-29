@@ -1,85 +1,98 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import products from './data/product'; // ✅ Importing from product data file
+import products from './data/product';
 import { toast } from 'react-hot-toast';
 
-
 const CartContext = createContext();
-
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
-  // Load cart from sessionStorage on initial render
   const [cart, setCart] = useState(() => {
     const storedCart = sessionStorage.getItem('cart');
-    return storedCart ? JSON.parse(storedCart) : {};
+    return storedCart ? JSON.parse(storedCart) : [];
   });
 
-  // Save cart to sessionStorage whenever it changes
   useEffect(() => {
     sessionStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Add item to the cart with a specific quantity
-const addToCart = (id, quantity = 1) => {
-  const numericId = Number(id);
-
-  setCart((prev) => {
-    const updatedCart = { ...prev };
+  // ✅ Add item with id, weight, price
+  const addToCart = (id, quantity = 1, weight, price) => {
+    const numericId = Number(id);
     const product = products.find((p) => p.id === numericId);
-    if (!product) return prev;
+    if (!product) return;
 
-    if (updatedCart[numericId]) {
-      updatedCart[numericId].quantity += quantity;
-    } else {
-      updatedCart[numericId] = { ...product, quantity };
-      toast.success(`Added ${product.name} to cart`);
-    }
+    setCart((prevCart) => {
+      const existingIndex = prevCart.findIndex(
+        (item) => item.id === numericId && item.weight === weight
+      );
 
-    return updatedCart;
-  });
-};
-
-// Decrease item quantity, remove it when quantity is 1
-const removeFromCart = (id) => {
-  setCart((prev) => {
-    const updatedCart = { ...prev };
-    const product = updatedCart[id];
-
-    if (product) {
-      if (product.quantity > 1) {
-        updatedCart[id].quantity -= 1;
+      if (existingIndex !== -1) {
+        const updatedCart = [...prevCart];
+        updatedCart[existingIndex].quantity += quantity;
+        return updatedCart;
       } else {
-        delete updatedCart[id];
-        toast.success(`Removed ${product.name} from cart`);
+        toast.success(`Added ${product.name} (${weight}) to cart`);
+        return [
+          ...prevCart,
+          {
+            id: numericId,
+            name: product.name,
+            image: product.image,
+            weight,
+            price,
+            quantity
+          }
+        ];
       }
-    }
+    });
+  };
 
-    return updatedCart;
-  });
-};
+  const removeFromCart = (id, weight) => {
+    setCart((prevCart) =>
+      prevCart.reduce((acc, item) => {
+        if (item.id === id && item.weight === weight) {
+          if (item.quantity > 1) {
+            acc.push({ ...item, quantity: item.quantity - 1 });
+          } else {
+            toast.success(`Removed ${item.name} (${weight}) from cart`);
+          }
+        } else {
+          acc.push(item);
+        }
+        return acc;
+      }, [])
+    );
+  };
 
-// Completely remove item from the cart
-const deleteItemFromCart = (id) => {
-  setCart((prev) => {
-    const updatedCart = { ...prev };
-    const product = updatedCart[id];
-    if (product) {
-      delete updatedCart[id];
-      toast.success(`Deleted ${product.name} from cart`);
-    }
-    return updatedCart;
-  });
-};
+  const deleteItemFromCart = (id, weight) => {
+    setCart((prevCart) =>
+      prevCart.filter((item) => {
+        const shouldDelete = item.id === id && item.weight === weight;
+        if (shouldDelete) {
+          toast.success(`Deleted ${item.name} (${weight}) from cart`);
+        }
+        return !shouldDelete;
+      })
+    );
+  };
 
+  // Total number of items
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Total number of items in the cart
-  const totalItems = Object.values(cart).reduce((acc, item) => acc + item.quantity, 0);
-
-  // Total price of items in the cart
-  const totalPrice = Object.values(cart).reduce((acc, item) => acc + item.price * item.quantity, 0);
+  // Total price
+  const totalPrice = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, deleteItemFromCart, totalItems, totalPrice }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        deleteItemFromCart,
+        totalItems,
+        totalPrice
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

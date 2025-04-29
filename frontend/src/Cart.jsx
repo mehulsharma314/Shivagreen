@@ -13,11 +13,11 @@ const Cart = () => {
   const [suggestionTrigger, setSuggestionTrigger] = useState(0);
 
   useEffect(() => {
-    const cartIds = Object.keys(cart);
+    const cartIds = cart.map((item) => item.id);
     const filtered = products.filter((item) => !cartIds.includes(item.id));
     const shuffled = filtered.sort(() => 0.5 - Math.random());
     setSuggestedProducts(shuffled.slice(0, 4));
-  }, [suggestionTrigger]);
+  }, [cart, suggestionTrigger]);
 
   return (
     <div className="container mx-auto py-10 px-4">
@@ -37,49 +37,46 @@ const Cart = () => {
         <div className="lg:flex lg:gap-8">
           {/* Cart Items */}
           <div className="lg:w-2/3 space-y-6">
-            {Object.keys(cart).map((id) => {
-              const item = cart[id];
-              return (
-                <div key={id} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-24 h-24 object-cover rounded-md mr-4"
-                  />
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold">{item.name}</h3>
-                    <p className="text-gray-500">{item.description}</p>
-                    <div className="mt-2 flex items-center gap-4">
-                      <p className="text-sm text-gray-700 font-medium">
-                        Price: ₹{(item.price * item.quantity).toFixed(2)}
-                      </p>
-                      <div className="flex items-center border border-green-600 rounded-md">
-                        <button
-                          onClick={() => removeFromCart(id)}
-                          className="px-3 py-1 text-green-600 hover:bg-green-100 font-bold"
-                        >
-                          -
-                        </button>
-                        <span className="px-3 py-1 text-sm">{item.quantity}</span>
-                        <button
-                          onClick={() => addToCart(id)}
-                          className="px-3 py-1 text-green-600 hover:bg-green-100 font-bold"
-                        >
-                          +
-                        </button>
-                      </div>
+            {cart.map((item, index) => (
+              <div key={`${item.id}-${item.weight}`} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-24 h-24 object-cover rounded-md mr-4"
+                />
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold">{item.name}</h3>
+                  <p className="text-gray-500">Weight: {item.weight}</p>
+                  <div className="mt-2 flex items-center gap-4">
+                    <p className="text-sm text-gray-700 font-medium">
+                      Price: ₹{(item.price * item.quantity).toFixed(2)}
+                    </p>
+                    <div className="flex items-center border border-green-600 rounded-md">
+                      <button
+                        onClick={() => removeFromCart(item.id, item.weight)}
+                        className="px-3 py-1 text-green-600 hover:bg-green-100 font-bold"
+                      >
+                        -
+                      </button>
+                      <span className="px-3 py-1 text-sm">{item.quantity}</span>
+                      <button
+                        onClick={() => addToCart(item.id, 1, item.weight, item.price)}
+                        className="px-3 py-1 text-green-600 hover:bg-green-100 font-bold"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
-                  <button
-                    onClick={() => deleteItemFromCart(id)}
-                    className="text-red-400 hover:text-red-800 transition cursor-pointer ml-4"  // Added margin-left
-                    title="Remove item"
-                  >
-                    <Trash2 className="w-6 h-6" />
-                  </button>
                 </div>
-              );
-            })}
+                <button
+                  onClick={() => deleteItemFromCart(item.id, item.weight)}
+                  className="text-red-400 hover:text-red-800 transition cursor-pointer ml-4"
+                  title="Remove item"
+                >
+                  <Trash2 className="w-6 h-6" />
+                </button>
+              </div>
+            ))}
           </div>
 
           {/* Cart Summary */}
@@ -119,7 +116,7 @@ const Cart = () => {
         <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800">You May Also Like</h2>
         <div
           className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-1000 ease-in-out"
-          style={{ opacity: 0.9 }} // Slight fade effect
+          style={{ opacity: 0.9 }}
         >
           {suggestedProducts.map((item) => (
             <div
@@ -133,13 +130,13 @@ const Cart = () => {
               />
               <h4 className="text-lg font-semibold text-green-700 mb-1">{item.name}</h4>
               <p className="text-gray-600 text-sm mb-2">
-                {item.description.split(' ').slice(0, 14).join(' ')}...
+                {item.description?.split(' ').slice(0, 14).join(' ')}...
               </p>
               <p className="text-md font-semibold text-gray-800 mb-2">₹{item.price}</p>
               <div className="flex items-center justify-center border border-green-600 rounded-md mt-2">
                 <button
                   onClick={() => {
-                    addToCart(item.id);
+                    addToCart(item.id, 1, item.weight || '500g', item.price); // fallback to a default weight
                     setSuggestionTrigger((prev) => prev + 1);
                   }}
                   className="px-4 py-1 text-green-600 hover:bg-green-300 font-bold cursor-pointer"

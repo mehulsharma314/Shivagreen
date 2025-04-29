@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const StepperPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -34,10 +35,9 @@ const StepperPage = () => {
   };
 
   const saveAddress = () => {
-    // Basic validation
     for (let key in address) {
       if (!address[key]) {
-        alert(`Please fill in the ${key}`);
+        toast.error(`Please fill in the ${key}`);
         return;
       }
     }
@@ -48,7 +48,7 @@ const StepperPage = () => {
   const simulatePayment = () => {
     const storedAddress = localStorage.getItem('deliveryAddress');
     if (!storedAddress) {
-      alert('Please enter address again.');
+      toast.error('Please enter address again.');
       setCurrentStep(1);
       return;
     }
@@ -57,7 +57,7 @@ const StepperPage = () => {
       items: cartItems,
       address: JSON.parse(storedAddress),
       total: calculateTotal(),
-      status: 'Processing',
+      status: 'Confirmed',
       placedAt: new Date().toISOString()
     };
 
@@ -70,7 +70,10 @@ const StepperPage = () => {
 
   const calculateTotal = () => {
     if (!Array.isArray(cartItems)) return 0;
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.reduce((total, item) => {
+      const itemPrice = item.selectedOption?.price || item.price || 0;
+      return total + itemPrice * item.quantity;
+    }, 0);
   };
 
   const steps = [
@@ -125,7 +128,7 @@ const StepperPage = () => {
                   <button
                     type="button"
                     onClick={saveAddress}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg cursor-pointer"
                   >
                     Save and Proceed to Payment →
                   </button>
@@ -138,7 +141,7 @@ const StepperPage = () => {
                 <h3 className="text-2xl font-bold mb-6 text-gray-800">Choose Payment Method</h3>
                 <button
                   onClick={simulatePayment}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg cursor-pointer"
                 >
                   Pay Now (Simulated) →
                 </button>
@@ -162,7 +165,7 @@ const StepperPage = () => {
                   </div>
                   <button
                     onClick={() => navigate('/my-orders')}
-                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg"
+                    className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-lg cursor-pointer"
                   >
                     Go to My Orders →
                   </button>
@@ -184,8 +187,14 @@ const StepperPage = () => {
                   <img src={item.image} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
                   <div className="flex-1">
                     <h4 className="text-lg font-semibold text-gray-700">{item.name}</h4>
+                    <p className="text-gray-600">Weight: {item.selectedOption?.weight || 'N/A'}</p>
                     <p className="text-gray-600">Qty: {item.quantity}</p>
-                    <p className="text-blue-600 font-bold">₹{item.price}</p>
+                    <p className="text-sm text-gray-500">
+                      Subtotal: ₹{(item.selectedOption?.price || item.price || 0) * item.quantity}
+                    </p>
+                    <p className="text-blue-600 font-bold">
+                      ₹{item.selectedOption?.price || item.price}
+                    </p>
                   </div>
                 </div>
               ))}
