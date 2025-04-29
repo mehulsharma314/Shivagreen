@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import api from './services/Api.js';
 import toast from 'react-hot-toast';
 
+// ... imports remain the same
+
 const Profile = () => {
   const navigate = useNavigate();
 
@@ -16,16 +18,14 @@ const Profile = () => {
   const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEdited, setIsEdited] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // For mobile toggle
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await api.get('/auth/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const response = await api.get('/api/auth/profile', {
+          headers: { Authorization: `Bearer ${token}` },
         });
         setUserData(response.data);
         setOriginalData(response.data);
@@ -47,10 +47,8 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await api.put('/auth/profile', userData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await api.put('/api/auth/profile', userData, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       toast.success('Profile updated successfully!');
       setUserData(response.data.user);
@@ -72,23 +70,23 @@ const Profile = () => {
     navigate('/login');
   };
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <div className="p-6">Loading...</div>;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Sidebar toggle button for mobile */}
-      <div className="flex md:hidden justify-between items-center bg-white p-4 shadow-md">
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-gray-600">
-          <Menu />
-        </button>
-        <h2 className="text-xl font-bold text-gray-800">Profile</h2>
-      </div>
+    <div className="relative flex flex-col md:flex-row min-h-screen bg-gray-100">
+      {/* Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-40 z-50 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
 
       {/* Sidebar */}
       <aside
-        className={`w-full md:w-72 bg-white p-6 shadow-md transform md:transform-none transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed md:static top-0 left-0 h-full md:h-auto w-72 bg-white p-6 shadow-md z-60 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 fixed md:static h-full md:h-auto`}
+        }`}
       >
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center text-center mt-6">
@@ -142,25 +140,24 @@ const Profile = () => {
               </div>
             </div>
           </nav>
-        </div>
 
-        {/* Logout Button */}
-        <button
-          onClick={handleLogout}
-          className="flex items-center justify-center gap-2 p-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 mt-8 w-full cursor-pointer"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
+          <button
+            onClick={handleLogout}
+            className="flex items-center justify-center gap-2 p-3 bg-red-500 text-white font-semibold rounded-md hover:bg-red-600 mt-8 w-full"
+          >
+            <LogOut className="w-5 h-5" />
+            Logout
+          </button>
+        </div>
       </aside>
 
-      {/* Overlay for mobile when sidebar is open */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        ></div>
-      )}
+      {/* Sidebar Toggle Header */}
+      <div className="flex md:hidden justify-between items-center bg-white p-4 shadow-md w-full z-40">
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-gray-600">
+          <Menu />
+        </button>
+        <h2 className="text-xl font-bold text-gray-800">Profile</h2>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-10 mt-4 md:mt-0">
@@ -228,18 +225,17 @@ const Profile = () => {
           />
         </section>
 
-        {/* Buttons */}
         {isEdited && (
           <div className="flex justify-start gap-4">
             <button
               onClick={handleSave}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-md cursor-pointer"
+              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-md"
             >
               Save Changes
             </button>
             <button
               onClick={handleCancel}
-              className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-8 rounded-md cursor-pointer"
+              className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-3 px-8 rounded-md"
             >
               Cancel
             </button>
@@ -251,3 +247,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
