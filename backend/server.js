@@ -23,7 +23,7 @@ app.use(passport.session());
 
 app.use(cookieParser())
 app.use(cors({
-  origin: 'http://localhost:5173',  // your frontend URL
+  origin: 'https://shivagreen-frontend.onrender.com',  // your frontend URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // allow cookies
 }));
