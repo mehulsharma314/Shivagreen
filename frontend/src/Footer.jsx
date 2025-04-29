@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Instagram,  } from 'lucide-react'; 
+import { Facebook, Instagram } from 'lucide-react'; 
 import { FaWhatsapp } from 'react-icons/fa';
 
 const Footer = () => {
@@ -29,17 +29,31 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Follow Us</h3>
           <div className="flex gap-4 items-center">
-  <a href="https://www.facebook.com/share/192Vbv9gRv/" className="text-gray-400 hover:text-white">
-    <Facebook size={28} />
-  </a>
-  <a href="https://www.instagram.com/shivagreenculture?igsh=MTc5NTM1emlna3ljZg==" className="text-gray-400 hover:text-white">
-    <Instagram size={28} />
-  </a>
-  <a href="#" className="text-gray-400 hover:text-white">
-    <FaWhatsapp size={28} />
-  </a>
-</div>
-
+            <a 
+              href="https://www.facebook.com/share/192Vbv9gRv/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-gray-400 hover:text-white"
+            >
+              <Facebook size={28} />
+            </a>
+            <a 
+              href="https://www.instagram.com/shivagreenculture?igsh=MTc5NTM1emlna3ljZg==" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-gray-400 hover:text-white"
+            >
+              <Instagram size={28} />
+            </a>
+            <a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-gray-400 hover:text-white"
+            >
+              <FaWhatsapp size={28} />
+            </a>
+          </div>
         </div>
       </div>
 
