@@ -17,15 +17,14 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = React.useState(1);
   const [pincode, setPincode] = React.useState('');
   const [deliveryMsg, setDeliveryMsg] = React.useState('');
-  const [selectedWeight, setSelectedWeight] = React.useState(
-    product?.priceOptions?.[0]?.weight || ''
-  );
-
+  
+  // Set initial selected weight to the first available weight option
+  const [selectedWeight, setSelectedWeight] = React.useState(Object.keys(product?.priceOptions)[0] || '');
+  
   const { addToCart } = useCart();
 
-  const selectedPrice = product.priceOptions.find(
-    (opt) => opt.weight === selectedWeight
-  )?.price;
+  // Get the selected price based on the selected weight
+  const selectedPrice = product?.priceOptions[selectedWeight];
 
   const handleAddToCart = () => {
     addToCart(product.id, quantity, selectedWeight, selectedPrice);
@@ -87,9 +86,9 @@ const ProductDetails = () => {
                 onChange={(e) => setSelectedWeight(e.target.value)}
                 className="border border-gray-300 px-4 py-2 rounded-lg"
               >
-                {product.priceOptions.map((opt) => (
-                  <option key={opt.weight} value={opt.weight}>
-                    {opt.weight}
+                {Object.keys(product.priceOptions).map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
                   </option>
                 ))}
               </select>
@@ -173,3 +172,4 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+
