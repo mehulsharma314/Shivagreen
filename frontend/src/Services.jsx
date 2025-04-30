@@ -146,12 +146,12 @@ const Services = () => {
               >
                 {visibleCount === 4 ? (
                   <>
-                    <span className="font-semibold">View More</span>
+                    <span className="font-semibold cursor-pointer">View More</span>
                     <FaChevronDown size={20} />
                   </>
                 ) : (
                   <>
-                    <span className="font-semibold">View Less</span>
+                    <span className="font-semibold cursor-pointer">View Less</span>
                     <FaChevronUp size={20} />
                   </>
                 )}

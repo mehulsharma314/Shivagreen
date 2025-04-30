@@ -193,9 +193,9 @@ const ProductDetails = () => {
                             {/* Product Details */}
                             <h4 className="text-lg font-semibold text-gray-800">{suggestedProduct.name}</h4>
                             <p className="text-gray-600 text-sm">
-                                {product.description.split(' ').slice(0, 18).join(' ')}...
+                                {product.description.split(' ').slice(0, 14).join(' ')}...
                                 <button
-                                    onClick={() => navigate(`/product/${product.id}`)}
+                                    onClick={() => navigate(`/product/${suggestedProduct.id}`)}
                                     className="text-green-600 font-medium hover:underline ml-1 cursor-pointer"
                                 >
                                     View More

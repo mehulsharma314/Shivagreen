@@ -125,15 +125,18 @@ const Cart = () => {
                 key={item.id}
                 className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-in-out cursor-pointer"
               >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-40 w-full object-contain mb-4 rounded-lg transition-transform duration-300"
-                />
-                <h4 className="text-lg font-semibold text-green-700 mb-1">{item.name}</h4>
-                <p className="text-gray-600 text-sm mb-2">
-                  {item.description?.split(' ').slice(0, 14).join(' ')}...
-                </p>
+                {/* Wrap the image and description with Link for navigation */}
+                <div onClick={() => navigate(`/product/${item.id}`)}>
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="h-40 w-full object-contain mb-4 rounded-lg transition-transform duration-300"
+                  />
+                  <h4 className="text-lg font-semibold text-green-700 mb-1">{item.name}</h4>
+                  <p className="text-gray-600 text-sm mb-2">
+                    {item.description?.split(' ').slice(0, 14).join(' ')}...
+                  </p>
+                </div>
                 <p className="text-md font-semibold text-gray-800 mb-2">₹{defaultPrice} ({defaultWeight})</p>
                 <div className="flex items-center justify-center border border-green-600 rounded-md mt-2">
                   <button
