@@ -175,18 +175,49 @@ const ProductDetails = () => {
       </div>
 
       {/* Suggested Products Section */}
-      <div className="max-w-5xl mx-auto mt-12 p-6">
-        <h3 className="text-3xl font-semibold text-center text-gray-800 mb-6">You May Also Like</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {suggestedProducts.map((suggestedProduct) => (
-            <div key={suggestedProduct.id} className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition cursor-pointer">
-              <img src={suggestedProduct.image} alt={suggestedProduct.name} className="rounded-xl object-cover w-full h-40 mb-4" />
-              <h4 className="text-lg font-semibold text-gray-800">{suggestedProduct.name}</h4>
-              <p className="text-xl text-green-600">₹{suggestedProduct.priceOptions[Object.keys(suggestedProduct.priceOptions)[0]]}</p>
-            </div>
-          ))}
+<div className="max-w-5xl mx-auto mt-12 p-6">
+  <h3 className="text-3xl font-semibold text-center text-gray-800 mb-6">You May Also Like</h3>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    {suggestedProducts.map((suggestedProduct) => (
+      <div key={suggestedProduct.id} className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition cursor-pointer">
+        
+        {/* Product Image and Info */}
+        <div onClick={() => navigate(`/product/${suggestedProduct.id}`)}>
+          <img
+            src={suggestedProduct.image}
+            alt={suggestedProduct.name}
+            className="rounded-xl object-cover w-full h-40 mb-4"
+          />
         </div>
+
+        {/* Product Details */}
+        <h4 className="text-lg font-semibold text-gray-800">{suggestedProduct.name}</h4>
+        <p className="text-sm text-gray-600 mb-4">{suggestedProduct.description}</p>
+        <p className="text-xl text-green-600 mb-4">₹{suggestedProduct.priceOptions[Object.keys(suggestedProduct.priceOptions)[0]]}</p>
+        
+        {/* Add to Cart Button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent navigating to product page
+            addToCart(suggestedProduct.id, 1, Object.keys(suggestedProduct.priceOptions)[0], suggestedProduct.priceOptions[Object.keys(suggestedProduct.priceOptions)[0]]);
+            toast('Item added to cart', {
+              icon: '🛒',
+              style: {
+                borderRadius: '10px',
+                background: '#333',
+                color: '#fff',
+              },
+            });
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white py-2 w-full rounded-xl text-lg shadow hover:shadow-lg transition"
+        >
+          Add to Cart
+        </button>
       </div>
+    ))}
+  </div>
+</div>
+
     </div>
   );
 };

@@ -70,7 +70,7 @@ const Services = () => {
                         {product.description.split(' ').slice(0, 18).join(' ')}...
                         <button
                           onClick={() => navigate(`/product/${product.id}`)}
-                          className="text-green-600 font-medium hover:underline ml-1"
+                          className="text-green-600 font-medium hover:underline ml-1 cursor-pointer"
                         >
                           View More
                         </button>
@@ -115,7 +115,7 @@ const Services = () => {
                             </button>
                           </div>
                           <button
-                            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl w-full mt-2"
+                            className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl w-full mt-2 cursor-pointer"
                             onClick={() => navigate('/cart')}
                           >
                             Go to Cart
@@ -123,7 +123,7 @@ const Services = () => {
                         </>
                       ) : (
                         <button
-                          className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white py-2 px-4 rounded-xl w-full"
+                          className="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white py-2 px-4 rounded-xl w-full cursor-pointer"
                           onClick={() => addToCart(product.id, 1, weight, price)}
                         >
                           Add to Cart
