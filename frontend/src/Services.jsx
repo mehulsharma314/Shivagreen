@@ -8,7 +8,7 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 const Services = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(4);
-  const [selectedWeights, setSelectedWeights] = useState({}); // weight state
+  const [selectedWeights, setSelectedWeights] = useState({}); // Track selected weights for each product
 
   const { cart, addToCart, removeFromCart } = useCart();
   const navigate = useNavigate();
@@ -45,8 +45,9 @@ const Services = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence>
               {products.slice(0, visibleCount).map((product) => {
-                const weight = selectedWeights[product.id] || '500g';
+                const weight = selectedWeights[product.id] || '1Kg'; // Default weight is '1Kg'
                 const productKey = `${product.id}_${weight}`;
+                const price = product.priceOptions[weight];
 
                 return (
                   <motion.div
@@ -79,7 +80,7 @@ const Services = () => {
                       <div className="mt-4 flex flex-col gap-2">
                         <select
                           className="border rounded-xl px-3 py-2"
-                          value={selectedWeights[product.id] || '500g'}
+                          value={selectedWeights[product.id] || '1Kg'}
                           onChange={(e) =>
                             setSelectedWeights((prev) => ({
                               ...prev,
@@ -87,10 +88,16 @@ const Services = () => {
                             }))
                           }
                         >
-                          <option value="250g">250g</option>
-                          <option value="500g">500g</option>
-                          <option value="1kg">1kg</option>
+                          {Object.keys(product.priceOptions).map((weightOption) => (
+                            <option key={weightOption} value={weightOption}>
+                              {weightOption}
+                            </option>
+                          ))}
                         </select>
+
+                        <p className="font-semibold text-lg text-gray-800">
+                          Price: ₹{price}
+                        </p>
 
                         <button
                           className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl w-full cursor-pointer"
