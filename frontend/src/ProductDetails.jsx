@@ -1,3 +1,4 @@
+// Import necessary components and libraries
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Truck, ShieldCheck, LifeBuoy } from 'lucide-react';
@@ -58,6 +59,11 @@ const ProductDetails = () => {
       </div>
     );
   }
+
+  // Logic to filter and display suggested products
+  const suggestedProducts = products
+    .filter((item) => item.id !== product.id) // Exclude the current product
+    .slice(0, 4); // Limit the number of suggested products to 4
 
   return (
     <div className="min-h-screen py-10 px-6 bg-gray-100">
@@ -167,9 +173,22 @@ const ProductDetails = () => {
           {product.description}
         </p>
       </div>
+
+      {/* Suggested Products Section */}
+      <div className="max-w-5xl mx-auto mt-12 p-6">
+        <h3 className="text-3xl font-semibold text-center text-gray-800 mb-6">You May Also Like</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {suggestedProducts.map((suggestedProduct) => (
+            <div key={suggestedProduct.id} className="bg-white p-4 rounded-2xl shadow-md hover:shadow-lg transition cursor-pointer">
+              <img src={suggestedProduct.image} alt={suggestedProduct.name} className="rounded-xl object-cover w-full h-40 mb-4" />
+              <h4 className="text-lg font-semibold text-gray-800">{suggestedProduct.name}</h4>
+              <p className="text-xl text-green-600">₹{suggestedProduct.priceOptions[Object.keys(suggestedProduct.priceOptions)[0]]}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ProductDetails;
-

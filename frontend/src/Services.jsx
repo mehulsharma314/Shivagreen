@@ -8,7 +8,7 @@ import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 const Services = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(4);
-  const [selectedWeights, setSelectedWeights] = useState({}); // Track selected weights for each product
+  const [selectedWeights, setSelectedWeights] = useState({}); // ✅ Needed to select weight
 
   const { cart, addToCart, removeFromCart } = useCart();
   const navigate = useNavigate();
@@ -28,9 +28,17 @@ const Services = () => {
     preloadImages();
   }, []);
 
-  const handleAddToCart = (id, weight) => addToCart(id, weight);
-  const handleIncrement = (id, weight) => addToCart(id, weight);
-  const handleDecrement = (id, weight) => removeFromCart(id, weight);
+  const handleAddToCart = (id, weight) => {
+    addToCart(id, weight);
+  };
+
+  const handleIncrement = (id, weight) => {
+    addToCart(id, weight);
+  };
+
+  const handleDecrement = (id, weight) => {
+    removeFromCart(id, weight);
+  };
 
   return (
     <div className="py-10 px-4 bg-gray-100">
@@ -45,7 +53,7 @@ const Services = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <AnimatePresence>
               {products.slice(0, visibleCount).map((product) => {
-                const weight = selectedWeights[product.id] || '1Kg'; // Default weight is '1Kg'
+                const weight = selectedWeights[product.id] || '1kg'; // ✅ ensure lowercase 'kg'
                 const productKey = `${product.id}_${weight}`;
                 const price = product.priceOptions[weight];
 
@@ -80,7 +88,7 @@ const Services = () => {
                       <div className="mt-4 flex flex-col gap-2">
                         <select
                           className="border rounded-xl px-3 py-2"
-                          value={selectedWeights[product.id] || '1Kg'}
+                          value={selectedWeights[product.id] || '1kg'}
                           onChange={(e) =>
                             setSelectedWeights((prev) => ({
                               ...prev,
@@ -148,7 +156,6 @@ const Services = () => {
             </AnimatePresence>
           </div>
 
-          {/* Icon Toggle for View More / View Less */}
           {products.length > 4 && (
             <div className="flex justify-center mt-8">
               <button

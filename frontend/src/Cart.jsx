@@ -46,10 +46,11 @@ const Cart = () => {
                 />
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{item.name}</h3>
-                  <p className="text-gray-500">Weight: {item.weight}</p>
+                  <p className="text-gray-500 mb-1">Weight: <strong>{item.weight}</strong></p>
+                  <p className="text-gray-500 mb-1">Description: {item.description}</p>
                   <div className="mt-2 flex items-center gap-4">
                     <p className="text-sm text-gray-700 font-medium">
-                      Price: ₹{(item.price * item.quantity).toFixed(2)}
+                      Price: ₹{(item.price * item.quantity).toFixed(2)} (₹{item.price} x {item.quantity})
                     </p>
                     <div className="flex items-center border border-green-600 rounded-md">
                       <button
@@ -114,38 +115,40 @@ const Cart = () => {
       {/* You May Also Like */}
       <div className="mt-16">
         <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800">You May Also Like</h2>
-        <div
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 transition-all duration-1000 ease-in-out"
-          style={{ opacity: 0.9 }}
-        >
-          {suggestedProducts.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-in-out cursor-pointer"
-            >
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-40 w-full object-contain mb-4 rounded-lg transition-transform duration-300"
-              />
-              <h4 className="text-lg font-semibold text-green-700 mb-1">{item.name}</h4>
-              <p className="text-gray-600 text-sm mb-2">
-                {item.description?.split(' ').slice(0, 14).join(' ')}...
-              </p>
-              <p className="text-md font-semibold text-gray-800 mb-2">₹{item.price}</p>
-              <div className="flex items-center justify-center border border-green-600 rounded-md mt-2">
-                <button
-                  onClick={() => {
-                    addToCart(item.id, 1, item.weight || '500g', item.price); // fallback to a default weight
-                    setSuggestionTrigger((prev) => prev + 1);
-                  }}
-                  className="px-4 py-1 text-green-600 hover:bg-green-300 font-bold cursor-pointer"
-                >
-                  +
-                </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          {suggestedProducts.map((item) => {
+            const defaultWeight = Object.keys(item.priceOptions)[0]; // e.g., '1kg'
+            const defaultPrice = item.priceOptions[defaultWeight];
+
+            return (
+              <div
+                key={item.id}
+                className="bg-white p-4 rounded-xl shadow-md hover:shadow-xl transform hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 ease-in-out cursor-pointer"
+              >
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="h-40 w-full object-contain mb-4 rounded-lg transition-transform duration-300"
+                />
+                <h4 className="text-lg font-semibold text-green-700 mb-1">{item.name}</h4>
+                <p className="text-gray-600 text-sm mb-2">
+                  {item.description?.split(' ').slice(0, 14).join(' ')}...
+                </p>
+                <p className="text-md font-semibold text-gray-800 mb-2">₹{defaultPrice} ({defaultWeight})</p>
+                <div className="flex items-center justify-center border border-green-600 rounded-md mt-2">
+                  <button
+                    onClick={() => {
+                      addToCart(item.id, 1, defaultWeight, defaultPrice);
+                      setSuggestionTrigger((prev) => prev + 1);
+                    }}
+                    className="px-4 py-1 text-green-600 hover:bg-green-300 font-bold cursor-pointer"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
